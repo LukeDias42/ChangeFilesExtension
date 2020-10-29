@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security;
 using System.Windows.Forms;
 
@@ -12,33 +13,29 @@ namespace ChangeFileExtension
         public fileExtensionChanger()
         {
             InitializeComponent();
+            fileNamesList.Columns.Add("File name:", 1000, HorizontalAlignment.Left);
         }
 
         
         private void browseButton_Click(object sender, EventArgs e)
         {
-            DialogResult dialogResult = openFileDialog1.ShowDialog();
+            filePaths = new List<string>();
+            fileNamesList.Items.Clear();
+            DialogResult dialogResult = openFileDialog.ShowDialog();
             if (dialogResult == DialogResult.OK)
             {
-                foreach (string filePath in openFileDialog1.FileNames)
+                foreach (string filePath in openFileDialog.FileNames)
                 {
                     try
                     {
                         filePaths.Add(filePath);
+                        fileNamesList.Items.Add(Path.GetFileName(filePath));
                     }
-                    catch (SecurityException ex)
-                    {
-                        // The user lacks appropriate permissions to read files, discover paths, etc.
-                        MessageBox.Show("Security error. Please contact your administrator for details.\n\n" +
-                                        "Error message: " + ex.Message + "\n\n" +
-                                        "Details (send to Support):\n\n" + ex.StackTrace);
-                    }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         // Could not add the file path - probably related to Windows file system permissions.
-                        MessageBox.Show("Cannot play the sound " + filePath.Substring(filePath.LastIndexOf('\\'))
-                            + ". You may not have permission to read the file, or " +
-                            "it may be corrupt.\n\nReported error: " + ex.Message);
+                        MessageBox.Show("Cannot add the file: " + filePath.Substring(filePath.LastIndexOf('\\'))
+                            + ". You may not have permission to read the file");
                     }
                 }
             }
@@ -53,26 +50,67 @@ namespace ChangeFileExtension
                     try
                     {
                         //Checks to see if there is a dot in the text box, it appears that Path.ChangeExtension doesn't work with too many dots?
-                        foreach(char character in userInputBox.Text)
+                        if (userInputBox.Text == "" || userInputBox.Text == null) throw new NothingInTheTextBoxException();
+                        foreach (char character in userInputBox.Text)
                         {
-                            if (character == '.') throw new Exception();
+                            if (character == '.') throw new UsedDotInTheTextBoxException();
                         }
 
                         //If the file already has that extension, it would be useless to change it
                         var newExtension = '.' + userInputBox.Text;
                         if (Path.GetExtension(filePath) != newExtension)
                         {
-                            File.Move(filePath, Path.ChangeExtension(filePath, newExtension);
-                        }
+                            var fileName = Path.GetFileName(filePath);
+                            var dotCount = fileName.Count(f => f == '.');
 
+                            if (dotCount == 0 || dotCount == 1)
+                            {
+                                //Just changes changes the extension
+                                File.Move(filePath, Path.ChangeExtension(filePath, newExtension));
+                            }
+                            else if (dotCount > 1)
+                            {
+                                //Modifies the extension AND the name to a better format
+                                var fileNameSplit = fileName.Split('.');
+                                string newName = fileNameSplit[0] + " - " + fileNameSplit[1] + newExtension;
+                                File.Move(filePath, Path.GetFullPath(filePath).Replace(fileName, newName));
+                            }
+                        }
                     }
-                    catch
+                    catch (NothingInTheTextBoxException)
                     {
+                        //User just forgot to write down the new extension
                         MessageBox.Show("Some error occured when trying to change the extension\n" +
-                            "Try not using any '.' characters in the new extension name.");
+                            "It happened because nothing was written on the text box!");
+                        return;
                     }
-                    filePaths = new List<string>();
+                    catch (UsedDotInTheTextBoxException)
+                    {
+                        //User used a dot in the extension, that is troublesome, he shouldn't do that
+                        MessageBox.Show("Some error occured when trying to change the extension\n" +
+                            "It happened because you wrote a dot in the text box!");
+                        return;
+                    }
+                    catch (Exception)
+                    {
+                        //If the file is in being seeded in a torrent or something, it will stop any changes to it
+                        MessageBox.Show("Some error occured when trying to change the extension\n" +
+                            "It could be that the files are opened somewhere else");
+                        return;
+                    }
                 }
+                filePaths = new List<string>();
+                fileNamesList.Items.Clear();
+                MessageBox.Show("Done! The extentions have all been changed to: " + '.' + userInputBox.Text);
+            }
+        }
+
+        private void userInputBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            //I've done this because it is natural for the user to press enter after writing something and expect some result
+            if(e.KeyCode == Keys.Enter)
+            {
+                okButton_Click(sender, e);
             }
         }
     }
