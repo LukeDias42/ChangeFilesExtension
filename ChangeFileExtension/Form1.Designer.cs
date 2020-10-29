@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.userInputBox = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
@@ -42,10 +42,10 @@
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(339, 39);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(80, 22);
-            this.textBox2.TabIndex = 1;
+            this.userInputBox.Location = new System.Drawing.Point(339, 39);
+            this.userInputBox.Name = "textBox2";
+            this.userInputBox.Size = new System.Drawing.Size(80, 22);
+            this.userInputBox.TabIndex = 1;
             // 
             // label2
             // 
@@ -58,7 +58,7 @@
             // 
             // button1
             // 
-            this.button1.BackColor = System.Drawing.Color.LightGray;
+            this.button1.BackColor = System.Drawing.Color.MistyRose;
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
             this.button1.Location = new System.Drawing.Point(12, 12);
             this.button1.Name = "button1";
@@ -66,29 +66,31 @@
             this.button1.TabIndex = 4;
             this.button1.Text = "BROWSE";
             this.button1.UseVisualStyleBackColor = false;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.browseButton_Click);
             // 
             // button2
             // 
+            this.button2.BackColor = System.Drawing.Color.Aqua;
             this.button2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.button2.Location = new System.Drawing.Point(363, 79);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(56, 42);
             this.button2.TabIndex = 5;
             this.button2.Text = "Ok";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.button2.UseVisualStyleBackColor = false;
+            this.button2.Click += new System.EventHandler(this.okButton_Click);
             // 
             // fileExtensionChanger
             // 
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.BackColor = System.Drawing.Color.Azure;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(431, 123);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.userInputBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = false;
             this.Name = "fileExtensionChanger";
@@ -101,7 +103,7 @@
         #endregion
 
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox userInputBox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;

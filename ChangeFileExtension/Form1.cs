@@ -1,13 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Security;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ChangeFileExtension
@@ -20,7 +14,8 @@ namespace ChangeFileExtension
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        
+        private void browseButton_Click(object sender, EventArgs e)
         {
             DialogResult dialogResult = openFileDialog1.ShowDialog();
             if (dialogResult == DialogResult.OK)
@@ -49,21 +44,25 @@ namespace ChangeFileExtension
             }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void okButton_Click(object sender, EventArgs e)
         {
             if (filePaths.Count > 0)
             {
-                foreach (string fileFullPath in filePaths)
+                foreach (string filePath in filePaths)
                 {
                     try
                     {
-                        foreach(char character in textBox2.Text)
+                        //Checks to see if there is a dot in the text box, it appears that Path.ChangeExtension doesn't work with too many dots?
+                        foreach(char character in userInputBox.Text)
                         {
                             if (character == '.') throw new Exception();
                         }
-                        if (Path.GetExtension(fileFullPath) != '.' + textBox2.Text)
+
+                        //If the file already has that extension, it would be useless to change it
+                        var newExtension = '.' + userInputBox.Text;
+                        if (Path.GetExtension(filePath) != newExtension)
                         {
-                            File.Move(fileFullPath, Path.ChangeExtension(fileFullPath, '.' + textBox2.Text));
+                            File.Move(filePath, Path.ChangeExtension(filePath, newExtension);
                         }
 
                     }
@@ -72,6 +71,7 @@ namespace ChangeFileExtension
                         MessageBox.Show("Some error occured when trying to change the extension\n" +
                             "Try not using any '.' characters in the new extension name.");
                     }
+                    filePaths = new List<string>();
                 }
             }
         }
